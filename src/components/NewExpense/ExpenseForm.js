@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import "./ExpenseForm.css";
 
-export default function ExpenseForm({ onSaveExpense }) {
+export default function ExpenseForm({ onSaveExpense, onCancel }) {
   const initialState = {
     title: "",
     amount: "",
-    date: "",
   };
   const [expense, setExpense] = useState(initialState);
+  const [date, setDate] = useState("");
 
   const handleChange = (e) => {
     const name = e.target.name;
@@ -16,10 +16,19 @@ export default function ExpenseForm({ onSaveExpense }) {
     setExpense((state) => ({ ...state, [name]: value }));
   };
 
+  //differnte handler for the date to create a new Date value
+  const hadleDateChange = (e) => {
+    setDate(e.target.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSaveExpense(expense);
+    //add the date to the expense object
+    const newDate = new Date(date);
+    const fullExpense = { ...expense, date: newDate };
+    onSaveExpense(fullExpense);
     setExpense(initialState);
+    setDate("");
   };
 
   return (
@@ -49,15 +58,18 @@ export default function ExpenseForm({ onSaveExpense }) {
           <label>Date</label>
           <input
             type="date"
-            min="2019-01-01"
+            min="2018-01-01"
             max="2022-12-31"
-            onChange={handleChange}
+            onChange={hadleDateChange}
             name="date"
-            value={expense.date}
+            value={date}
           />
         </div>
       </div>
       <div className="new-expense__actions">
+        <button type="button" onClick={() => onCancel(true)}>
+          Cancel
+        </button>
         <button type="submit">Add Expense</button>
       </div>
     </form>
